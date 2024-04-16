@@ -1,0 +1,43 @@
+<div class="form-content">
+  <form [formGroup]="formGroup" class="row g-3 shadow">
+    <div class="col-md-6">
+      <label for="api-key" class="form-label">OpenAI API Key</label>
+      <input formControlName="openaiKey" class="form-control" id="api-key" />
+    </div>
+    <div class="col-md-6">
+      <label for="inputPassword4" class="form-label">Modelo GPT</label>
+      <input formControlName="model" class="form-control" id="inputPassword4" />
+    </div>
+    <div class="col-12">
+      <label for="mongo" class="form-label">MongoDB Atlas URL</label>
+      <input formControlName="mongoUrl" type="text" class="form-control" id="mongo" />
+    </div>
+    <div class="col-md-6">
+        <label for="db" class="form-label">Banco de Dados</label>
+        <input formControlName="db" class="form-control" id="db" />
+      </div>
+      <div class="col-md-6">
+        <label for="projeto" class="form-label">Collection</label>
+        <input formControlName="collection" class="form-control" id="projeto" />
+      </div>
+    <div>
+      <label for="formFileLg" class="form-label">Artigos</label>
+      <input
+        class="form-control"
+        id="formFile"
+        type="file"
+        multiple
+        accept=".pdf"
+        (change)="setFiles($event)"
+      />
+    </div>
+    <div class="col-12">
+      <label for="textarea" class="form-label">Arquitetura do Json</label>
+      <textarea formControlName="json" type="text" class="form-control" id="textarea" rows="6">
+      </textarea>
+    </div>
+    <div class="col-12">
+      <button type="submit" (click)="extract()" class="btn btn-dark">Iniciar Extração</button>
+    </div>
+  </form>
+</div>
