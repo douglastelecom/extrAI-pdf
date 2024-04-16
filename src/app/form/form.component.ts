@@ -27,17 +27,16 @@ export class FormComponent {
 }
 
   setFiles(e: any){
-    debugger
     this.files = Array.from(e.target.files);
-    debugger
   }
 
   async extract(){
-    const formData = new FormData();
-    this.files.forEach(async (file: any) => {
+    
+    for (const file of this.files){
+      const formData = new FormData();
       formData.append('json', JSON.stringify(this.formGroup.value));
       formData.append('file', file);
       await this.formService.completion(formData);
-    })
+    }
   }
 }
