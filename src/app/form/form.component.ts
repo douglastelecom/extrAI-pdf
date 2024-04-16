@@ -35,10 +35,8 @@ export class FormComponent {
   async extract(){
     const formData = new FormData();
     this.files.forEach(async (file: any) => {
-      formData.append('json', this.formGroup.value);
+      formData.append('json', JSON.stringify(this.formGroup.value));
       formData.append('file', file);
-      const x = formData.get('json')
-      debugger
       await this.formService.completion(formData);
     })
   }
