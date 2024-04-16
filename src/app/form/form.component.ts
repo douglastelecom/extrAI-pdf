@@ -42,6 +42,7 @@ export class FormComponent {
     Promise.all(promises).then((responses) => {
       const error = ""
       responses.forEach((response, indice) => {
+        const fileError = "";
         if(response === "error"){
 
         }
