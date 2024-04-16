@@ -9,8 +9,11 @@ export class FormService {
   constructor(private http: HttpClient) { }
 
   async completion(formData: any){
-    var response = this.http.post<any>('http://localhost:8080/completion', formData)
-    return await lastValueFrom(response)
+    try{
+      var response = this.http.post<any>('http://localhost:8080/completion', formData)
+      return await lastValueFrom(response)
+    } catch(error){
+      return "erro"
+    }
   }
-
 }
