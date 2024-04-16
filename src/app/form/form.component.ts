@@ -31,12 +31,14 @@ export class FormComponent {
   }
 
   async extract(){
-    
+    var promises: Promise<any>[] = [];
     for (const file of this.files){
       const formData = new FormData();
       formData.append('json', JSON.stringify(this.formGroup.value));
       formData.append('file', file);
-      await this.formService.completion(formData);
+      var promise = this.formService.completion(formData);
+      promises.push(promise)
     }
+    Promise.all(promises).then((values) => console.log(values))
   }
 }
