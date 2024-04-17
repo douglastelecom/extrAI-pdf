@@ -1,4 +1,14 @@
 <div class="form-content">
+  @if(showError){
+    <div class="alert alert-danger" role="alert">
+      {{failedFilesString}}
+    </div>
+  }
+  @if(showSuccess){
+    <div class="alert alert-success" role="alert">
+      {{successFilesString}}
+    </div>
+  }
   <form [formGroup]="formGroup" class="row g-3 shadow">
     <div class="col-md-6">
       <label for="api-key" class="form-label">OpenAI API Key</label>

@@ -12,7 +12,12 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 })
 export class FormComponent {
   formGroup!: FormGroup;
-  files!: any;
+  files: File[]=[];
+  failedFiles: string[]=[];
+  showError: boolean = false;
+  showSuccess: boolean = false;
+  failedFilesString: string = ""
+  successFilesString: string = ""
   constructor(private fb: FormBuilder, private formService: FormService) { }
 
   ngOnInit(): void {
@@ -32,22 +37,31 @@ export class FormComponent {
 
   async extract() {
     var promises: Promise<any>[] = [];
-    for (const file of this.files) {
+    this.files.forEach((file, index) => {
       const formData = new FormData();
       formData.append('json', JSON.stringify(this.formGroup.value));
       formData.append('file', file);
-      var promise = this.formService.completion(formData);
+      var promise = this.formService.completion(formData).catch(error => this.failedFiles.push(this.files[index].name))
       promises.push(promise)
-    }
-    Promise.all(promises).then((responses) => {
-      const error = ""
-      responses.forEach((response, indice) => {
-        const fileError = "";
-        if(response === "error"){
-
-        }
+    });
+    Promise.all(promises).then(() => {
+      debugger
+      if (this.failedFiles.length > 0) {
+        this.showError = true;
+        this.failedFilesString = ""
+        this.failedFiles.forEach((fileName, index) => {
+          if (index === this.failedFilesString.length) {
+            this.failedFilesString = this.failedFilesString + ".";
+          } else {
+            this.failedFilesString = this.failedFilesString + ", "
+          }
+        })
       }
-      )
+      debugger
+      this.showSuccess = true;
+      this.successFilesString = (this.files.length + this.failedFiles.length).toString + "arquivos extraídos."
+      console.log(this.successFilesString)
     })
   }
 }
+
