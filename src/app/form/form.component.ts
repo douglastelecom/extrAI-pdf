@@ -11,11 +11,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   styleUrl: './form.component.sass'
 })
 export class FormComponent {
-  formGroup!: FormGroup;
-  files: File[]=[];
-  failedFiles: string[]=[];
-  showError: boolean = false;
-  showSuccess: boolean = false;
+  formGroup!: FormGroup
+  files: File[] = []
+  failedFiles: string[] = []
+  showError: boolean = false
+  showSuccess: boolean = false
   failedFilesString: string = ""
   successFilesString: string = ""
   constructor(private fb: FormBuilder, private formService: FormService) { }
@@ -37,29 +37,36 @@ export class FormComponent {
 
   async extract() {
     var promises: Promise<any>[] = [];
+    this.failedFiles = [];
+    this.failedFilesString = "";
+    this.successFilesString = "";
+    this.showError = false;
+    this.showSuccess = false;
     this.files.forEach((file, index) => {
+      debugger
       const formData = new FormData();
       formData.append('json', JSON.stringify(this.formGroup.value));
       formData.append('file', file);
+      debugger
       var promise = this.formService.completion(formData).catch(error => this.failedFiles.push(this.files[index].name))
       promises.push(promise)
     });
     Promise.all(promises).then(() => {
       debugger
       if (this.failedFiles.length > 0) {
-        this.showError = true;
-        this.failedFilesString = ""
         this.failedFiles.forEach((fileName, index) => {
-          if (index === this.failedFilesString.length) {
-            this.failedFilesString = this.failedFilesString + ".";
+          if (index === this.failedFiles.length - 1) {
+            this.failedFilesString =  this.failedFilesString.slice(0, -2) + " e " + "'" + fileName + "'" + ".";
           } else {
-            this.failedFilesString = this.failedFilesString + ", "
+            this.failedFilesString = this.failedFilesString + "'" + fileName + "'" + ", ";
           }
         })
+        this.failedFilesString = "Os seguintes arquivos não foram extraídos: " + this.failedFilesString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
+        this.showError = true;
       }
       debugger
+      this.successFilesString = (this.files.length - this.failedFiles.length) + " arquivo(s) extraído(s) com sucesso.  "
       this.showSuccess = true;
-      this.successFilesString = (this.files.length + this.failedFiles.length).toString + "arquivos extraídos."
       console.log(this.successFilesString)
     })
   }

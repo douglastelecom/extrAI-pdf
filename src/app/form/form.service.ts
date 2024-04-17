@@ -13,7 +13,7 @@ export class FormService {
       var response = this.http.post<any>('http://localhost:8080/completion', formData)
       return await lastValueFrom(response)
     } catch(error){
-      return "erro"
+      throw error
     }
   }
 }
