@@ -42,6 +42,9 @@ export class FormComponent {
     this.successFilesString = "";
     this.showError = false;
     this.showSuccess = false;
+    debugger
+    await this.formService.testApi(this.formGroup.value).catch(error => console.log(error.message))
+    debugger
     this.files.forEach((file, index) => {
       debugger
       const formData = new FormData();
