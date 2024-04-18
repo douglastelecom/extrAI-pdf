@@ -16,7 +16,7 @@ export class FormComponent {
   failedFiles: string[] = []
   showError: boolean = false
   showSuccess: boolean = false
-  failedFilesString: string = ""
+  errorString: string = ""
   successFilesString: string = ""
   constructor(private fb: FormBuilder, private formService: FormService) { }
 
@@ -34,43 +34,44 @@ export class FormComponent {
   setFiles(e: any) {
     this.files = Array.from(e.target.files);
   }
-
+  
   async extract() {
     var promises: Promise<any>[] = [];
     this.failedFiles = [];
-    this.failedFilesString = "";
+    this.errorString = "";
     this.successFilesString = "";
     this.showError = false;
     this.showSuccess = false;
-    debugger
-    await this.formService.testApi(this.formGroup.value).catch(error => console.log(error.message))
-    debugger
-    this.files.forEach((file, index) => {
-      debugger
-      const formData = new FormData();
-      formData.append('json', JSON.stringify(this.formGroup.value));
-      formData.append('file', file);
-      debugger
-      var promise = this.formService.completion(formData).catch(error => this.failedFiles.push(this.files[index].name))
-      promises.push(promise)
-    });
-    Promise.all(promises).then(() => {
-      debugger
-      if (this.failedFiles.length > 0) {
-        this.failedFiles.forEach((fileName, index) => {
-          if (index === this.failedFiles.length - 1) {
-            this.failedFilesString =  this.failedFilesString.slice(0, -2) + " e " + "'" + fileName + "'" + ".";
-          } else {
-            this.failedFilesString = this.failedFilesString + "'" + fileName + "'" + ", ";
-          }
-        })
-        this.failedFilesString = "Os seguintes arquivos não foram extraídos: " + this.failedFilesString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
-        this.showError = true;
-      }
-      debugger
-      this.successFilesString = (this.files.length - this.failedFiles.length) + " arquivo(s) extraído(s) com sucesso.  "
-      this.showSuccess = true;
-    })
+    var canConnect = true;
+    await this.formService.testApi(this.formGroup.value).catch(httpError => {
+      console.log(httpError)
+      this.errorString = httpError.error.message + "Resposta do servidor: "+ httpError.error.error
+      this.showError = true
+      canConnect = false})
+    if(canConnect){
+      this.files.forEach((file, index) => {
+        const formData = new FormData();
+        formData.append('json', JSON.stringify(this.formGroup.value));
+        formData.append('file', file);
+        var promise = this.formService.completion(formData).catch(error => this.failedFiles.push(this.files[index].name))
+        promises.push(promise)
+      });
+      Promise.all(promises).then(() => {
+        if (this.failedFiles.length > 0) {
+          this.failedFiles.forEach((fileName, index) => {
+            if (index === this.failedFiles.length - 1) {
+              this.errorString =  this.errorString.slice(0, -2) + " e " + "'" + fileName + "'" + ".";
+            } else {
+              this.errorString = this.errorString + "'" + fileName + "'" + ", ";
+            }
+          })
+          this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
+          this.showError = true;
+        }
+        this.successFilesString = (this.files.length - this.failedFiles.length) + " arquivo(s) extraído(s) com sucesso.  "
+        this.showSuccess = true;
+      })
+    }
   }
 }
 
