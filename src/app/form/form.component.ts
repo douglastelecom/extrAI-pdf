@@ -70,7 +70,6 @@ export class FormComponent {
       debugger
       this.successFilesString = (this.files.length - this.failedFiles.length) + " arquivo(s) extraído(s) com sucesso.  "
       this.showSuccess = true;
-      console.log(this.successFilesString)
     })
   }
 }

@@ -8,17 +8,24 @@ export class FormService {
 
   constructor(private http: HttpClient) { }
 
-  async testApi(form: any){
-    var response = this.http.post('http://localhost:8080/test', form)
-    return await lastValueFrom(response)
-  }
-
-  async completion(formData: any){
-    try{
-      var response = this.http.post<any>('http://localhost:8080/completion', formData)
+  async testApi(form: any) {
+    try {
+      var response = this.http.post<any>('http://localhost:8080/test', form)
       return await lastValueFrom(response)
-    } catch(error){
+    } catch (error) {
       throw error
     }
+
+
+  }
+
+  async completion(formData: any) {
+    try {
+      var response = this.http.post<any>('http://localhost:8080/completion', formData)
+      return await lastValueFrom(response)
+    } catch (error) {
+      throw error
+    }
+
   }
 }
