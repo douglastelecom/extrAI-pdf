@@ -18,6 +18,8 @@ export class FormComponent {
   showSuccess: boolean = false
   errorString: string = ""
   successFilesString: string = ""
+  disableButton: boolean = false
+  showLoading: boolean = false
   constructor(private fb: FormBuilder, private formService: FormService) { }
 
   ngOnInit(): void {
@@ -36,6 +38,9 @@ export class FormComponent {
   }
   
   async extract() {
+    this.formGroup.disable()
+    this.showLoading = true
+    this.disableButton = true
     var promises: Promise<any>[] = [];
     this.failedFiles = [];
     this.errorString = "";
@@ -45,8 +50,11 @@ export class FormComponent {
     var canConnect = true;
     await this.formService.testApi(this.formGroup.value).catch(httpError => {
       console.log(httpError)
+      this.showLoading = false
+      this.disableButton = false;
       this.errorString = httpError.error.message + "Resposta do servidor: "+ httpError.error.error
       this.showError = true
+      this.formGroup.enable()
       canConnect = false})
     if(canConnect){
       this.files.forEach((file, index) => {
@@ -70,6 +78,9 @@ export class FormComponent {
         }
         this.successFilesString = (this.files.length - this.failedFiles.length) + " arquivo(s) extraído(s) com sucesso.  "
         this.showSuccess = true;
+        this.formGroup.enable()
+        this.disableButton = false;
+        this.showLoading = false
       })
     }
   }
