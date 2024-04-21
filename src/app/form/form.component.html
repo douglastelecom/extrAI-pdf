@@ -9,36 +9,25 @@
   <div class="messageAlert">{{errorString}}</div>
   <div class="close" (click)="showError = false"> &times;</div>
 </div>
-}@if(showLoading){
-  <div class="spinner-border loading" role="status">
-    <span class="sr-only"></span>
-  </div>
 }
 <div class="form-content">
   <form [formGroup]="formGroup" class="row g-3 shadow">
+    @if(showLoading){
+      <div class="spinner-border loading" role="status">
+        <span class="sr-only"></span>
+      </div>
+    }
     <div class="col-md-6">
-      <label for="api-key" class="form-label">OpenAI API Key</label>
-      <input formControlName="openaiKey" class="form-control" id="api-key" />
-    </div>
-    <div class="col-md-6">
-      <label for="inputPassword4" class="form-label">Modelo GPT</label>
-      <input formControlName="model" class="form-control" id="inputPassword4" />
-    </div>
-    <div class="col-12">
-      <label for="mongo" class="form-label">MongoDB Atlas URL</label>
-      <input formControlName="mongoUrl" type="text" class="form-control" id="mongo" />
-    </div>
-    <div class="col-md-6">
-      <label for="db" class="form-label">Banco de Dados</label>
-      <input formControlName="db" class="form-control" id="db" />
-    </div>
-    <div class="col-md-6">
-      <label for="projeto" class="form-label">Collection</label>
+      <label for="projeto" class="form-label">Nome do projeto</label>
       <input formControlName="collection" class="form-control" id="projeto" />
     </div>
-    <div>
+    <div class="col-md-6">
       <label for="formFileLg" class="form-label">Artigos</label>
       <input class="form-control" id="formFile" type="file" multiple accept=".pdf" (change)="setFiles($event)" />
+    </div>
+    <div class="col-12">
+      <label for="mongo" class="form-label">Instrução</label>
+      <input formControlName="instruction" type="text" class="form-control" id="mongo" />
     </div>
     <div class="col-12">
       <label for="textarea" class="form-label">Arquitetura do Json</label>

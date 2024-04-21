@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormService } from './form.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ThisReceiver } from '@angular/compiler';
 
 @Component({
   selector: 'app-form',
@@ -18,7 +19,7 @@ export class FormComponent {
   showSuccess: boolean = false
   errorString: string = ""
   successFilesString: string = ""
-  disableButton: boolean = false
+  disableButton: boolean = true
   showLoading: boolean = false
   constructor(private fb: FormBuilder, private formService: FormService) { }
 
@@ -28,13 +29,24 @@ export class FormComponent {
       model: [''],
       mongoUrl: [''],
       db: [''],
-      collection: [''],
-      json: ['']
+      collection: ['', Validators.required],
+      json: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'doencas': [{'nome_doeca': '', 'sintomas':[''], 'tratamentos': [{'nome_tratamento': '', 'descricao_tratamento': ''}]}"],
+      instruction: ['Colete informações referentes às doenças de pele em bebês.']
     })
+    this.formGroup.valueChanges.subscribe(val => {
+      this.checkButton()
+    })
+  }
+
+  checkButton(){
+    if(this.formGroup.valid && this.files.length > 0){
+      this.disableButton = false
+    }
   }
 
   setFiles(e: any) {
     this.files = Array.from(e.target.files);
+    this.checkButton();
   }
   
   async extract() {
