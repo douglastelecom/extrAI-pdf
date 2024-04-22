@@ -9,12 +9,12 @@ export class FormService {
   constructor(private http: HttpClient) { }
 
   async testApi(form: any){
-      var response = this.http.post<any>('https://extrai-pdf-back-luciana.onrender.com/test', form)
+      var response = this.http.post<any>('http://localhost:8080/test', form)
       return await lastValueFrom(response)
   }
 
   async completion(formData: any){
-      var response = this.http.post<any>('https://extrai-pdf-back-luciana.onrender.com/completion', formData)
+      var response = this.http.post<any>('http://localhost:8080/completion', formData)
       return await lastValueFrom(response)
   }
 }

@@ -21,6 +21,7 @@ export class FormComponent {
   successFilesString: string = ""
   disableButton: boolean = true
   showLoading: boolean = false
+  jsonsExtracted: string[] = [];
   constructor(private fb: FormBuilder, private formService: FormService) { }
 
   ngOnInit(): void {
@@ -76,7 +77,13 @@ export class FormComponent {
         var promise = this.formService.completion(formData).catch(error => this.failedFiles.push(this.files[index].name))
         promises.push(promise)
       });
-      Promise.all(promises).then(() => {
+      Promise.all(promises).then((results) => {
+        for(let i = 0; i < results.length; i++){
+          console.log(promises[i])
+        }
+        console.log(promises.length)
+        debugger
+        console.log(promises)
         if (this.failedFiles.length > 0) {
           this.failedFiles.forEach((fileName, index) => {
             if (index === this.failedFiles.length - 1) {
