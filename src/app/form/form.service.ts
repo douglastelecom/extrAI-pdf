@@ -17,4 +17,9 @@ export class FormService {
       var response = this.http.post<any>('http://localhost:8080/completion', formData)
       return await lastValueFrom(response)
   }
+
+  async healthCheck(){
+    var response = this.http.get<any>('http://localhost:8080/').subscribe()
+}
+
 }

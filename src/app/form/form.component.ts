@@ -22,6 +22,7 @@ export class FormComponent {
   disableButton: boolean = true
   showLoading: boolean = false
   jsonsExtracted: string[] = [];
+  jsonCheckbox: boolean = true;
   constructor(private fb: FormBuilder, private formService: FormService) { }
 
   ngOnInit(): void {
@@ -37,6 +38,7 @@ export class FormComponent {
     this.formGroup.valueChanges.subscribe(val => {
       this.checkButton()
     })
+    this.formService.healthCheck();
   }
 
   checkButton(){
@@ -74,16 +76,22 @@ export class FormComponent {
         const formData = new FormData();
         formData.append('json', JSON.stringify(this.formGroup.value));
         formData.append('file', file);
-        var promise = this.formService.completion(formData).catch(error => this.failedFiles.push(this.files[index].name))
+        var promise = this.formService.completion(formData).catch((error) => {
+          this.failedFiles.push(this.files[index].name)
+          return null
+        })
         promises.push(promise)
       });
       Promise.all(promises).then((results) => {
-        for(let i = 0; i < results.length; i++){
-          console.log(promises[i])
+        results = results.filter(element => element !== null);
+        if(this.jsonCheckbox){
+          const json = JSON.stringify(results)
+          var blob = new Blob([json], {type: 'application/json'});
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = this.formGroup.value.collection;
+          a.click();
         }
-        console.log(promises.length)
-        debugger
-        console.log(promises)
         if (this.failedFiles.length > 0) {
           this.failedFiles.forEach((fileName, index) => {
             if (index === this.failedFiles.length - 1) {
@@ -95,7 +103,7 @@ export class FormComponent {
           this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
           this.showError = true;
         }
-        this.successFilesString = (this.files.length - this.failedFiles.length) + " arquivo(s) extraído(s) com sucesso.  "
+        this.successFilesString = (results.length) + " arquivo(s) extraído(s) com sucesso.  "
         this.showSuccess = true;
         this.formGroup.enable()
         this.disableButton = false;

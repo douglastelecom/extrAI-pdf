@@ -35,6 +35,12 @@
       </textarea>
     </div>
     <div class="col-12">
+      <input class="form-check-input" style="margin-right: 0.4rem;" type="checkbox" [ngModelOptions]="{standalone: true}" [(ngModel)]="jsonCheckbox" id="flexCheckDefault">
+      <label class="form-check-label" for="flexCheckDefault">
+        Download Json
+      </label>
+    </div>
+    <div class="col-12">
       <button type="submit" [disabled]="disableButton" (click)="extract()" class="btn btn-dark">Iniciar Extração</button>
     </div>
   </form>
