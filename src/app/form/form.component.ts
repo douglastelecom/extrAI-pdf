@@ -74,6 +74,7 @@ export class FormComponent {
       this.formGroup.enable()
       canConnect = false})
     if(canConnect){
+      console.log("Teste de conexão aprovado.")
       this.files.forEach((file, index) => {
         const formData = new FormData();
         formData.append('json', JSON.stringify(this.formGroup.value));
