@@ -37,7 +37,6 @@ export class FormComponent {
     })
     this.formGroup.valueChanges.subscribe(val => {
       this.checkButton()
-      console.log("O valor mudou")
     })
     this.formService.healthCheck();
   }
