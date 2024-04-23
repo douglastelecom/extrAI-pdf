@@ -43,5 +43,10 @@
     <div class="col-12">
       <button type="submit" [disabled]="disableButton" (click)="extract()" class="btn btn-dark">Iniciar Extração</button>
     </div>
+    @if(showLoading){
+      <div>
+        <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
+      </div>
+    }
   </form>
 </div>

@@ -19,10 +19,12 @@ export class FormComponent {
   showSuccess: boolean = false
   errorString: string = ""
   successFilesString: string = ""
+  loadingMessage: string = ""
   disableButton: boolean = true
   showLoading: boolean = false
   jsonsExtracted: string[] = [];
   jsonCheckbox: boolean = true;
+  promiseResolvedCount: number = 0 
   constructor(private fb: FormBuilder, private formService: FormService) { }
 
   ngOnInit(): void {
@@ -65,6 +67,7 @@ export class FormComponent {
     this.showError = false;
     this.showSuccess = false;
     var canConnect = true;
+    this.loadingMessage = "Testando conexão..."
     await this.formService.testApi(this.formGroup.value).catch(httpError => {
       console.log(httpError)
       this.showLoading = false
@@ -75,18 +78,22 @@ export class FormComponent {
       canConnect = false})
     if(canConnect){
       console.log("Teste de conexão aprovado.")
+      this.loadingMessage = this.promiseResolvedCount + " de "+ this.files.length +" arquivos extraídos."
       this.files.forEach((file, index) => {
         const formData = new FormData();
         formData.append('json', JSON.stringify(this.formGroup.value));
         formData.append('file', file);
-        var promise = this.formService.completion(formData).catch((error) => {
+        var promise = this.formService.completion(formData).then((resp)=> {this.promiseResolvedCount += 1; return resp}).catch((error) => {
+          this.promiseResolvedCount += 1
           this.failedFiles.push(this.files[index].name)
           return null
         })
+        debugger
         promises.push(promise)
       });
       Promise.all(promises).then((results) => {
         results = results.filter(element => element !== null);
+        debugger
         if(this.jsonCheckbox){
           const json = JSON.stringify(results)
           var blob = new Blob([json], {type: 'application/json'});
@@ -106,11 +113,12 @@ export class FormComponent {
           this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
           this.showError = true;
         }
-        this.successFilesString = (results.length) + " arquivo(s) extraído(s) com sucesso.  "
-        this.showSuccess = true;
+        this.successFilesString = "Arquivo(s) extraído(s) com sucesso: " + (results.length) + " de " + this.files.length
+        this.showSuccess = true
         this.formGroup.enable()
-        this.disableButton = false;
+        this.disableButton = false
         this.showLoading = false
+        this.promiseResolvedCount = 0
       })
     }
   }
