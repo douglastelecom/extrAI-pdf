@@ -37,6 +37,7 @@ export class FormComponent {
     })
     this.formGroup.valueChanges.subscribe(val => {
       this.checkButton()
+      console.log("O valor mudou")
     })
     this.formService.healthCheck();
   }
@@ -44,6 +45,8 @@ export class FormComponent {
   checkButton(){
     if(this.formGroup.valid && this.files.length > 0){
       this.disableButton = false
+    } else{
+      this.disableButton = true
     }
   }
 
