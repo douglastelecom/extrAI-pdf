@@ -88,12 +88,10 @@ export class FormComponent {
           this.failedFiles.push(this.files[index].name)
           return null
         })
-        debugger
         promises.push(promise)
       });
       Promise.all(promises).then((results) => {
         results = results.filter(element => element !== null);
-        debugger
         if(this.jsonCheckbox){
           const json = JSON.stringify(results)
           var blob = new Blob([json], {type: 'application/json'});
