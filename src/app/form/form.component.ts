@@ -34,7 +34,7 @@ export class FormComponent {
       mongoUrl: [''],
       db: [''],
       collection: ['', Validators.required],
-      json: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}"],
+      json: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}}"],
       instruction: ['Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal.']
     })
     this.formGroup.valueChanges.subscribe(val => {
