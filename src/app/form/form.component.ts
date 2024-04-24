@@ -34,8 +34,8 @@ export class FormComponent {
       mongoUrl: [''],
       db: [''],
       collection: ['', Validators.required],
-      json: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'doencas': [{'nome_doeca': '', 'sintomas':[''], 'tratamentos': [{'nome_tratamento': '', 'descricao_tratamento': ''}]}"],
-      instruction: ['Colete informações referentes às doenças de pele em bebês.']
+      json: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}"],
+      instruction: ['Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal.']
     })
     this.formGroup.valueChanges.subscribe(val => {
       this.checkButton()

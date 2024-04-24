@@ -26,12 +26,13 @@
       <input class="form-control" id="formFile" type="file" multiple accept=".pdf" (change)="setFiles($event)" />
     </div>
     <div class="col-12">
-      <label for="mongo" class="form-label">Instrução</label>
-      <input formControlName="instruction" type="text" class="form-control" id="mongo" />
+      <label for="textareaInstruction" class="form-label">Instrução</label>
+      <textarea formControlName="instruction" type="text" class="form-control" id="textareaInstruction" rows="6">
+      </textarea>
     </div>
     <div class="col-12">
-      <label for="textarea" class="form-label">Arquitetura do Json</label>
-      <textarea formControlName="json" type="text" class="form-control" id="textarea" rows="6">
+      <label for="textareaJson" class="form-label">Arquitetura do Json</label>
+      <textarea formControlName="json" type="text" class="form-control" id="textareaJson" rows="6">
       </textarea>
     </div>
     <div class="col-12">
