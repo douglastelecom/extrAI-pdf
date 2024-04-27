@@ -34,7 +34,7 @@ export class FormComponent {
       mongoUrl: [''],
       db: [''],
       collection: ['', Validators.required],
-      json: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'assuntos_relacionados': [{'nome_assunto': '', 'descricao_assunto':'', 'citacao_resumida': ''}], 'breve_resumo':''}"],
+      json: ["{'nome_artigo': '', 'nome_artigo_traduzido':'', 'autores': [''], 'ano': '', 'universidade': '', 'resumo_artigo': '', 'assuntos_relacionados': [{'nome_assunto': '', 'descricao_assunto':'', 'breve_resumo_citacao':''}]}"],
       instruction: ['O meu tcc é sobre a criação de um sistema que extrai dados de artigos através de LLMs como o chatgpt. Procure no artigo que postarei logo abaixo o que ele tem a ver com o meu trabalho.']
     })
     this.formGroup.valueChanges.subscribe(val => {
