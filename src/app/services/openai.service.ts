@@ -1,4 +1,4 @@
-import { OpenaiBody, Message } from './../types/openaiBody.interface';
+import { FormOpenai} from './../types/openaiBody.interface';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import OpenAI from 'openai';
@@ -12,11 +12,12 @@ export class OpenaiService {
   constructor(private http: HttpClient) { }
 
   async completion(completionBody: ChatCompletionCreateParamsNonStreaming, apiKey: string){
-    const openai = new OpenAI({apiKey: apiKey})
-    return await openai.chat.completions.create(completionBody)
-  }
-  
-  setMessagesForExtraction(openaiForm: OpenaiBody, article: string){
+      const openai = new OpenAI({apiKey: apiKey})
+      const response = await openai.chat.completions.create(completionBody)
+      return JSON.parse(response.choices[0].message.content!)
+}
+
+  setMessagesForExtraction(openaiForm: FormOpenai, article: string){
     openaiForm.messages = [{ role: "system", content: "Você será minha ferramenta para extração de dados." },
     { role: "user", content: openaiForm.instruction + "Extraia as informações em português (se não estiver em português, traduza) contidas no artigo abaixo respondendo com um json no formato: "
      + openaiForm.jsonArchitecture

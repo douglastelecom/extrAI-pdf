@@ -1,4 +1,4 @@
-export interface MongoBody {
+export interface FormMongo {
     dataSource: string;
     database: string;
     collection: string;
