@@ -7,7 +7,7 @@ import { Observable, lastValueFrom } from 'rxjs';
 export class FormService {
 
   constructor(private http: HttpClient) { }
-
+/*
   async testApi(form: any){
       var response = this.http.post<any>('https://extrai-pdf-back-homologa.onrender.com/test', form)
       return await lastValueFrom(response)
@@ -21,5 +21,8 @@ export class FormService {
   async healthCheck(){
     var response = this.http.get<any>('https://extrai-pdf-back-homologa.onrender.com/').subscribe()
 }
+*/
+
+
 
 }
