@@ -2,6 +2,7 @@ import { OpenaiBody, Message } from './../types/openaiBody.interface';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import OpenAI from 'openai';
+import { ChatCompletionCreateParamsNonStreaming } from 'openai/resources';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +11,9 @@ export class OpenaiService {
 
   constructor(private http: HttpClient) { }
 
-  async completion(openaiBody: OpenaiBody){
-    const openai = new OpenAI({ apiKey: openaiBody.apiKey })
-    return await openai.chat.completions.create()
-
+  async completion(openaiBody: ChatCompletionCreateParamsNonStreaming, apiKey: string){
+    const openai = new OpenAI({apiKey: apiKey})
+    return await openai.chat.completions.create(openaiBody)
   }
   
   setMessagesForExtraction(openaiBody: OpenaiBody, article: string){
