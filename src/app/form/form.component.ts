@@ -33,10 +33,10 @@ export class FormComponent {
   ngOnInit(): void {
     this.openaiForm = this.fb.group({
       apiKey: [''],
-      model: [''],
+      model: ['gpt-3.5-turbo-0125'],
       projectName: [''],
-      jsonArchitecture: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}"],
-      instruction: ['Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal.']
+      jsonArchitecture: [''],
+      instruction: ['']
     });
     this.mongoForm = this.fb.group({
       dataSource: [''],
