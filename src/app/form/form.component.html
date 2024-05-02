@@ -1,6 +1,6 @@
 @if(showSuccess){
 <div class="alert alert-success success" role="alert">
-  <div class="messageAlert">{{successFilesString}}</div> 
+  <div class="messageAlert">{{successFilesString}}</div>
   <div class="close" (click)="showSuccess = false"> &times;</div>
 </div>
 }
@@ -11,43 +11,74 @@
 </div>
 }
 <div class="form-content">
-  <form [formGroup]="formGroup" class="row g-3 shadow">
+  <div class="row g-3 shadow forms">
     @if(showLoading){
       <div class="spinner-border loading" role="status">
         <span class="sr-only"></span>
       </div>
-    }
-    <div class="col-md-6">
-      <label for="projeto" class="form-label">Nome do projeto</label>
-      <input formControlName="collection" class="form-control" id="projeto" />
-    </div>
-    <div class="col-md-6">
-      <label for="formFileLg" class="form-label">Artigos</label>
-      <input class="form-control" id="formFile" type="file" multiple accept=".pdf" (change)="setFiles($event)" />
-    </div>
+      }
+    <form [formGroup]="openaiForm">
+      <div class="col-md-6">
+        <label for="projeto" class="form-label">Nome do projeto</label>
+        <input formControlName="projectName" class="form-control" id="projeto" />
+      </div>
+      <div class="col-md-6">
+        <label for="formFileLg" class="form-label">Artigos</label>
+        <input class="form-control" id="formFile" type="file" multiple accept=".pdf" (change)="setFiles($event)" />
+      </div>
+      <div class="col-12">
+        <label for="textareaInstruction" class="form-label">Instrução</label>
+        <textarea formControlName="instruction" type="text" class="form-control" id="textareaInstruction" rows="6">
+        </textarea>
+      </div>
+      <div class="col-12">
+        <label for="textareaJson" class="form-label">Arquitetura do Json</label>
+        <textarea formControlName="jsonArchitecture" type="text" class="form-control" id="textareaJson" rows="6">
+        </textarea>
+      </div>
+    </form>
     <div class="col-12">
-      <label for="textareaInstruction" class="form-label">Instrução</label>
-      <textarea formControlName="instruction" type="text" class="form-control" id="textareaInstruction" rows="6">
-      </textarea>
-    </div>
-    <div class="col-12">
-      <label for="textareaJson" class="form-label">Arquitetura do Json</label>
-      <textarea formControlName="json" type="text" class="form-control" id="textareaJson" rows="6">
-      </textarea>
-    </div>
-    <div class="col-12">
-      <input class="form-check-input" style="margin-right: 0.4rem;" type="checkbox" [ngModelOptions]="{standalone: true}" [(ngModel)]="jsonCheckbox" id="flexCheckDefault">
+      <input class="form-check-input" style="margin-right: 0.4rem;" type="checkbox"
+        [ngModelOptions]="{standalone: true}" [(ngModel)]="jsonCheckbox" id="flexCheckDefault">
       <label class="form-check-label" for="flexCheckDefault">
         Download Json
       </label>
     </div>
     <div class="col-12">
-      <button type="submit" [disabled]="disableButton" (click)="extract()" class="btn btn-dark">Iniciar Extração</button>
-    </div>
-    @if(showLoading){
-      <div>
-        <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
+      <input class="form-check-input" data-toggle="collapse" style="margin-right: 0.4rem;" type="checkbox"
+        [ngModelOptions]="{standalone: true}" [(ngModel)]="mongoCheckbox" id="flexCheckMongo">
+      <label class="form-check-label" for="flexCheckMongo">
+        Salvar via MongoDB Atlas API
+      </label>
+      <div id="form-mongo">
+        <form action="" [formGroup]="mongoForm">
+          <div class="col-md-6">
+            <label for="cluster" class="form-label">Cluster</label>
+            <input formControlName="dataSource" class="form-control" id="cluster" />
+          </div>
+          <div class="col-md-6">
+            <label for="database" class="form-label">Database</label>
+            <input formControlName="database" class="form-control" id="database" />
+          </div>
+          <div class="col-md-6">
+            <label for="apikey-mongo" class="form-label">API Key (MongoDB Atlas)</label>
+            <input formControlName="apiKey" class="form-control" id="apikey-mongo" />
+          </div>
+          <div class="col-md-6">
+            <label for="projeto" class="form-label">Collection</label>
+            <input formControlName="collection" class="form-control" id="collection" />
+          </div>
+        </form>
       </div>
-    }
-  </form>
+    </div>
+    <div class="col-12">
+      <button type="submit" [disabled]="disableButton" (click)="extract()" class="btn btn-dark">Iniciar
+        Extração</button>
+    </div>
+  </div>
+  @if(showLoading){
+  <div>
+    <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
+  </div>
+  }
 </div>

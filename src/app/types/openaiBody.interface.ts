@@ -4,4 +4,5 @@ export interface FormOpenai extends ChatCompletionCreateParamsNonStreaming{
     jsonArchitecture?: string;
     instruction?: string;
     apiKey?: string;
+    projectName?: string;
 }

@@ -26,6 +26,7 @@ export class FormComponent {
   showLoading: boolean = false
   jsonsExtracted: string[] = [];
   jsonCheckbox: boolean = true;
+  mongoCheckbox: boolean = false;
   promiseResolvedCount: number = 0 
   constructor(private fb: FormBuilder, private formService: FormService, private mongodbService: MongodbService) { }
 
@@ -33,6 +34,7 @@ export class FormComponent {
     this.openaiForm = this.fb.group({
       apiKey: [''],
       model: [''],
+      projectName: [''],
       jsonArchitecture: ["{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}"],
       instruction: ['Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal.']
     });
@@ -62,7 +64,7 @@ export class FormComponent {
     this.checkButton();
   }
   
-  // async extract() {
+  async extract() {
   //   this.openaiForm.disable()
   //   this.showLoading = true
   //   this.disableButton = true
@@ -129,6 +131,6 @@ export class FormComponent {
   //       this.promiseResolvedCount = 0
   //     })
   //   }
-  // }
+  }
 }
 
