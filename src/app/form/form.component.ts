@@ -4,6 +4,8 @@ import { FormService } from './form.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ThisReceiver } from '@angular/compiler';
 import { MongodbService } from '../services/mongodb.service';
+import { ExtraiService } from '../services/extrai.service';
+import { OpenaiService } from '../services/openai.service';
 
 @Component({
   selector: 'app-form',
@@ -28,7 +30,7 @@ export class FormComponent {
   jsonCheckbox: boolean = true;
   mongoCheckbox: boolean = false;
   promiseResolvedCount: number = 0 
-  constructor(private fb: FormBuilder, private formService: FormService, private mongodbService: MongodbService) { }
+  constructor(private fb: FormBuilder, private extraiService: ExtraiService, private openaiService: OpenaiService, private mongodbService: MongodbService) { }
 
   ngOnInit(): void {
     this.openaiForm = this.fb.group({
@@ -63,74 +65,84 @@ export class FormComponent {
     this.files = Array.from(e.target.files);
     this.checkButton();
   }
+
+  disableForms(){
+    this.openaiForm.disable()
+    this.mongoForm.disable()
+  }
+  enableForms(){
+    this.openaiForm.enable()
+    this.mongoForm.enable()
+  }
   
   async extract() {
-  //   this.openaiForm.disable()
-  //   this.showLoading = true
-  //   this.disableButton = true
-  //   var promises: Promise<any>[] = [];
-  //   this.failedFiles = [];
-  //   this.errorString = "";
-  //   this.successFilesString = "";
-  //   this.showError = false;
-  //   this.showSuccess = false;
-  //   var canConnect = true;
-  //   this.loadingMessage = "Testando conexão..."
-  //   await this.formService.testApi(this.formGroup.value).catch(httpError => {
-  //     console.log(httpError)
-  //     this.showLoading = false
-  //     this.disableButton = false;
-  //     this.errorString = httpError.error.message + "Resposta do servidor: "+ httpError.error.error
-  //     this.showError = true
-  //     this.formGroup.enable()
-  //     canConnect = false})
-  //   if(canConnect){
-  //     console.log("Teste de conexão aprovado.")
-  //     this.loadingMessage = this.promiseResolvedCount + " de "+ this.files.length +" arquivos extraídos."
-  //     this.files.forEach((file, index) => {
-  //       const formData = new FormData();
-  //       formData.append('json', JSON.stringify(this.formGroup.value));
-  //       formData.append('file', file);
-  //       var promise = this.formService.completion(formData).then((resp)=> {this.promiseResolvedCount += 1; return resp}).catch((error) => {
-  //         this.promiseResolvedCount += 1
-  //         this.failedFiles.push(this.files[index].name)
-  //         return null
-  //       })
-  //       debugger
-  //       promises.push(promise)
-  //     });
-  //     Promise.all(promises).then(await (results) => {
-  //       results = results.filter(element => element !== null);
-  //       await this.mongodbService.insertMany()
-
-  //       debugger
-  //       if(this.jsonCheckbox){
-  //         const json = JSON.stringify(results)
-  //         var blob = new Blob([json], {type: 'application/json'});
-  //         var a = document.createElement('a');
-  //         a.href = URL.createObjectURL(blob);
-  //         a.download = this.formGroup.value.collection;
-  //         a.click();
-  //       }
-  //       if (this.failedFiles.length > 0) {
-  //         this.failedFiles.forEach((fileName, index) => {
-  //           if (index === this.failedFiles.length - 1) {
-  //             this.errorString =  this.errorString.slice(0, -2) + " e " + "'" + fileName + "'" + ".";
-  //           } else {
-  //             this.errorString = this.errorString + "'" + fileName + "'" + ", ";
-  //           }
-  //         })
-  //         this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
-  //         this.showError = true;
-  //       }
-  //       this.successFilesString = "Arquivo(s) extraído(s) com sucesso: " + (results.length) + " de " + this.files.length
-  //       this.showSuccess = true
-  //       this.formGroup.enable()
-  //       this.disableButton = false
-  //       this.showLoading = false
-  //       this.promiseResolvedCount = 0
-  //     })
-  //   }
+    try{
+      this.openaiForm.disable()
+      this.showLoading = true
+      this.disableButton = true
+      var promises: Promise<any>[] = [];
+      this.failedFiles = [];
+      this.errorString = "";
+      this.successFilesString = "";
+      this.showError = false;
+      this.showSuccess = false;
+      // var canConnect = true;
+      this.loadingMessage = "Testando conexão..."
+      await this.extraiService.testConnections(this.openaiForm.value, this.mongoCheckbox, this.mongoForm.value, )
+      
+        // this.showLoading = false
+        // this.disableButton = false;
+        // this.errorString = httpError.error.message + "Resposta do servidor: "+ httpError.error.error
+        // this.showError = true
+        // this.openaiForm.enable
+        // this.mongoForm.enable
+        this.loadingMessage = this.promiseResolvedCount + " de "+ this.files.length +" arquivos extraídos."
+        this.files.forEach((file, index) => {
+          var promise = this.extraiService.extractData(this.openaiForm.value, file).then((resp)=> {this.promiseResolvedCount += 1; return resp}).catch((error) => {
+            this.promiseResolvedCount += 1
+            this.failedFiles.push(this.files[index].name)
+            return null
+          })
+          debugger
+          promises.push(promise)
+        });
+        Promise.all(promises).then(async (results) => {
+          results = results.filter(element => element !== null);
+          await this.mongodbService.insertMany(this.mongoForm.value, results)
+          if(this.jsonCheckbox){
+            const json = JSON.stringify(results)
+            var blob = new Blob([json], {type: 'application/json'});
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = this.mongoForm.value.collection;
+            a.click();
+          }
+          if (this.failedFiles.length > 0) {
+            this.failedFiles.forEach((fileName, index) => {
+              if (index === this.failedFiles.length - 1) {
+                this.errorString =  this.errorString.slice(0, -2) + " e " + "'" + fileName + "'" + ".";
+              } else {
+                this.errorString = this.errorString + "'" + fileName + "'" + ", ";
+              }
+            })
+            this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
+            this.showError = true;
+          }
+          // this.successFilesString = "Arquivo(s) extraído(s) com sucesso: " + (results.length) + " de " + this.files.length
+          // this.showSuccess = true
+          // this.formGroup.enable()
+          // this.disableButton = false
+          // this.showLoading = false
+          // this.promiseResolvedCount = 0
+        })
+      } 
+    catch(error: any){
+        this.errorString = error.message + "Resposta do servidor: "+ error.error
+        this.showError = true
+    } finally {
+      
+    }
+  
   }
 }
 
