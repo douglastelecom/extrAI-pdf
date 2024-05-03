@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormService } from './form.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ThisReceiver } from '@angular/compiler';
 import { MongodbService } from '../services/mongodb.service';
@@ -50,7 +49,6 @@ export class FormComponent {
     this.openaiForm.valueChanges.subscribe(val => {
       this.checkButton()
     })
-    //this.formService.healthCheck();
   }
 
   checkButton(){
@@ -86,16 +84,8 @@ export class FormComponent {
       this.successFilesString = "";
       this.showError = false;
       this.showSuccess = false;
-      // var canConnect = true;
       this.loadingMessage = "Testando conexão..."
-      await this.extraiService.testConnections(this.openaiForm.value, this.mongoCheckbox, this.mongoForm.value, )
-      
-        // this.showLoading = false
-        // this.disableButton = false;
-        // this.errorString = httpError.error.message + "Resposta do servidor: "+ httpError.error.error
-        // this.showError = true
-        // this.openaiForm.enable
-        // this.mongoForm.enable
+      await this.extraiService.testConnections(this.openaiForm.value, this.mongoCheckbox, this.mongoForm.value)
         this.loadingMessage = this.promiseResolvedCount + " de "+ this.files.length +" arquivos extraídos."
         this.files.forEach((file, index) => {
           var promise = this.extraiService.extractData(this.openaiForm.value, file).then((resp)=> {this.promiseResolvedCount += 1; return resp}).catch((error) => {
@@ -128,21 +118,19 @@ export class FormComponent {
             this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
             this.showError = true;
           }
-          // this.successFilesString = "Arquivo(s) extraído(s) com sucesso: " + (results.length) + " de " + this.files.length
-          // this.showSuccess = true
-          // this.formGroup.enable()
-          // this.disableButton = false
-          // this.showLoading = false
-          // this.promiseResolvedCount = 0
+          this.successFilesString = "Arquivo(s) extraído(s) com sucesso: " + (results.length) + " de " + this.files.length
+          this.showSuccess = true
         })
       } 
     catch(error: any){
         this.errorString = error.message + "Resposta do servidor: "+ error.error
         this.showError = true
     } finally {
-      
+      this.enableForms()
+      this.showLoading = false
+      this.promiseResolvedCount = 0
+      this.disableButton = true
     }
-  
   }
 }
 
