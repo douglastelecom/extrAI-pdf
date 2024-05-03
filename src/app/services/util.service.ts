@@ -1,6 +1,7 @@
+import pdfjsLib from 'pdfjs-dist';
+import PDFJSWorker from "pdfjs-dist/build/pdf.worker";
 import { Injectable } from '@angular/core';
 import PdfParse from 'pdf-parse';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -27,12 +28,21 @@ reduceTextLength(maxToken: number, currentToken: number, text: string) {
 }
 
 async extractTextFromFile(file: File): Promise<string> {
-  var article: string = ""
-  file.arrayBuffer().then(async (pdfBuffer) => {
-    const pdf = await PdfParse(Buffer.from(pdfBuffer))
-    article = pdf.text
-  })
-  return article;
+  try{
+    debugger
+    var pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise
+    debugger
+    const page = await pdf.getPage(1)
+    debugger
+    const tokenizedText = await page.getTextContent();
+    debugger
+    const pageText = tokenizedText.items.map(token => token).join("");
+    debugger
+    return pageText;
+  }catch(error: any){
+    console.log(error)
+    return "fsdfsd"
+  }
 }
 
 }
