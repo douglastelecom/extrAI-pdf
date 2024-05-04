@@ -1,7 +1,6 @@
-import pdfjsLib from 'pdfjs-dist';
-import PDFJSWorker from "pdfjs-dist/build/pdf.worker";
+import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker";
 import { Injectable } from '@angular/core';
-import PdfParse from 'pdf-parse';
 @Injectable({
   providedIn: 'root'
 })
@@ -30,16 +29,20 @@ reduceTextLength(maxToken: number, currentToken: number, text: string) {
 async extractTextFromFile(file: File): Promise<string> {
   try{
     debugger
-    var pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise
+    const buffer = await file.arrayBuffer()
     debugger
-    const page = await pdf.getPage(1)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker
     debugger
-    const tokenizedText = await page.getTextContent();
-    debugger
-    const pageText = tokenizedText.items.map(token => token).join("");
-    debugger
-    return pageText;
+    var pdf = pdfjsLib.getDocument(buffer).promise.then((pdf) => {debugger; console.log(pdf)})
+    // debugger
+    // const page = await pdf.getPage(1)
+    // const tokenizedText = await page.getTextContent();
+    // const pageText = tokenizedText.items.map(token => token).join("");
+    // console.log(pageText)
+    // return pageText;
+    return "fsdfsd"
   }catch(error: any){
+    debugger
     console.log(error)
     return "fsdfsd"
   }

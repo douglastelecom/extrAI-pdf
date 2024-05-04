@@ -21,7 +21,7 @@
     "@types/pdf-parse": "^1.1.4",
     "bootstrap": "^5.3.3",
     "openai": "^4.40.0",
-    "pdfjs-dist": "^2.16.105",
+    "pdfjs-dist": "^3.11.174",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
