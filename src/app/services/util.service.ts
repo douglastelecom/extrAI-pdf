@@ -1,6 +1,7 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker";
 import { Injectable } from '@angular/core';
+import { TextContent } from 'pdfjs-dist/types/src/display/api';
 @Injectable({
   providedIn: 'root'
 })
@@ -33,7 +34,11 @@ async extractTextFromFile(file: File): Promise<string> {
     debugger
     pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker
     debugger
-    var pdf = pdfjsLib.getDocument(buffer).promise.then((pdf) => {debugger; console.log(pdf)})
+    var pdf: string | TextContent = await pdfjsLib.getDocument(buffer).promise
+    .then(async (pdf) => {debugger; return pdf.getPage(1)
+      .then(async (page)=> {return page.getTextContent()
+        .then((text)=> {return text})})})
+        debugger
     // debugger
     // const page = await pdf.getPage(1)
     // const tokenizedText = await page.getTextContent();

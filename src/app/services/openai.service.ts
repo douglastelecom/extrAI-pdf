@@ -57,7 +57,6 @@ export class OpenaiService {
 
   async testApi(reqBody: any) {
     try {
-      debugger
         const openai = new OpenAI({ apiKey: reqBody.apiKey, dangerouslyAllowBrowser: true });
         await openai.chat.completions.create({
             messages: [{ role: "system", content: "Isso é um teste." },

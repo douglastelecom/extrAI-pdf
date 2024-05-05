@@ -94,7 +94,6 @@ export class FormComponent {
           //   this.failedFiles.push(this.files[index].name)
           //   return null
           // })
-          debugger
           promises.push(promise)
         });}
       //   Promise.all(promises).then(async (results) => {
