@@ -40,6 +40,7 @@ async extractTextFromFile(file: File): Promise<string> {
         text = text + " " + item.str
       });
     }
+    debugger
     return text
 }
 

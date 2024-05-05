@@ -12,13 +12,16 @@ export class OpenaiService {
 
   constructor(private http: HttpClient, private utilService: UtilService) { }
 
-  async completion(formOpenai: FormOpenai, apiKey: string, article: string): Promise<any>{
+  async completion(formOpenai: ChatCompletionCreateParamsNonStreaming, apiKey: string, article: string): Promise<any>{
     try{ 
-    const openai = new OpenAI({apiKey: apiKey})
+    const openai = new OpenAI({apiKey: apiKey, dangerouslyAllowBrowser: true})
+    debugger
       this.setMessagesForExtraction(formOpenai, article)
       const response = await openai.chat.completions.create(formOpenai)
+      debugger
       return JSON.parse(response.choices[0].message.content!)
     } catch (error: any) {
+      debugger
       if (error.message.substring(0, 10) === "Rate limit") {
         const pause = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
         await pause(30000);
@@ -57,6 +60,7 @@ export class OpenaiService {
 
   async testApi(reqBody: any) {
     try {
+      debugger
         const openai = new OpenAI({ apiKey: reqBody.apiKey, dangerouslyAllowBrowser: true });
         await openai.chat.completions.create({
             messages: [{ role: "system", content: "Isso é um teste." },
@@ -64,6 +68,7 @@ export class OpenaiService {
             model: reqBody.model,
             response_format: { type: "json_object" }
         });
+        debugger
     } catch (error: any) {
         throw new Error("Não foi possível se comunicar com a API da OpenAI. Verifique a Api Key e os demais parâmetros.")
     }

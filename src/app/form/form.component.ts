@@ -89,39 +89,40 @@ export class FormComponent {
         this.loadingMessage = this.promiseResolvedCount + " de "+ this.files.length +" arquivos extraídos."
         this.files.forEach((file, index) => {
           var promise = this.extraiService.extractData(this.openaiForm.value, file).then((resp)=> {this.promiseResolvedCount += 1; return resp})
-          // .catch((error) => {
-          //   this.promiseResolvedCount += 1
-          //   this.failedFiles.push(this.files[index].name)
-          //   return null
-          // })
+          .catch((error) => {
+            this.promiseResolvedCount += 1
+            this.failedFiles.push(this.files[index].name)
+            return null
+          })
           promises.push(promise)
-        });}
-      //   Promise.all(promises).then(async (results) => {
-      //     results = results.filter(element => element !== null);
-      //     await this.mongodbService.insertMany(this.mongoForm.value, results)
-      //     if(this.jsonCheckbox){
-      //       const json = JSON.stringify(results)
-      //       var blob = new Blob([json], {type: 'application/json'});
-      //       var a = document.createElement('a');
-      //       a.href = URL.createObjectURL(blob);
-      //       a.download = this.mongoForm.value.collection;
-      //       a.click();
-      //     }
-      //     if (this.failedFiles.length > 0) {
-      //       this.failedFiles.forEach((fileName, index) => {
-      //         if (index === this.failedFiles.length - 1) {
-      //           this.errorString =  this.errorString.slice(0, -2) + " e " + "'" + fileName + "'" + ".";
-      //         } else {
-      //           this.errorString = this.errorString + "'" + fileName + "'" + ", ";
-      //         }
-      //       })
-      //       this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
-      //       this.showError = true;
-      //     }
-      //     this.successFilesString = "Arquivo(s) extraído(s) com sucesso: " + (results.length) + " de " + this.files.length
-      //     this.showSuccess = true
-      //   })
-      // } 
+        });
+        Promise.all(promises).then(async (results) => {
+          debugger
+          results = results.filter(element => element !== null);
+          await this.mongodbService.insertMany(this.mongoForm.value, results)
+          if(this.jsonCheckbox){
+            const json = JSON.stringify(results)
+            var blob = new Blob([json], {type: 'application/json'});
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = this.mongoForm.value.collection;
+            a.click();
+          }
+          if (this.failedFiles.length > 0) {
+            this.failedFiles.forEach((fileName, index) => {
+              if (index === this.failedFiles.length - 1) {
+                this.errorString =  this.errorString.slice(0, -2) + " e " + "'" + fileName + "'" + ".";
+              } else {
+                this.errorString = this.errorString + "'" + fileName + "'" + ", ";
+              }
+            })
+            this.errorString = "Os seguintes arquivos não foram extraídos: " + this.errorString + "\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido."
+            this.showError = true;
+          }
+          this.successFilesString = "Arquivo(s) extraído(s) com sucesso: " + (results.length) + " de " + this.files.length
+          this.showSuccess = true
+        })
+      } 
     catch(error: any){
       debugger
         this.errorString = error.message + "Resposta do servidor: "+ error.error

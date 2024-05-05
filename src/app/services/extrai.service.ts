@@ -17,7 +17,12 @@ export class ExtraiService {
   async extractData(formOpenai: FormOpenai, file: File): Promise<any>{
       const article = await this.utilService.extractTextFromFile(file)
       this.openaiService.setMessagesForExtraction(formOpenai, article)
-      return await this.openaiService.completion(formOpenai, formOpenai.apiKey!, article)
+      const apiKey = formOpenai.apiKey
+      delete formOpenai.apiKey
+      delete formOpenai.instruction
+      delete formOpenai.jsonArchitecture
+      delete formOpenai.projectName
+      return await this.openaiService.completion(formOpenai, apiKey!, article)
   }
 
   async testConnections(formOpenai: FormOpenai, useMongo: boolean, formMongo?: FormMongo){
