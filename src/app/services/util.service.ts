@@ -28,29 +28,19 @@ reduceTextLength(maxToken: number, currentToken: number, text: string) {
 }
 
 async extractTextFromFile(file: File): Promise<string> {
-  try{
-    debugger
     const buffer = await file.arrayBuffer()
-    debugger
     pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker
-    debugger
-    var pdf: string | TextContent = await pdfjsLib.getDocument(buffer).promise
-    .then(async (pdf) => {debugger; return pdf.getPage(1)
-      .then(async (page)=> {return page.getTextContent()
-        .then((text)=> {return text})})})
-        debugger
-    // debugger
-    // const page = await pdf.getPage(1)
-    // const tokenizedText = await page.getTextContent();
-    // const pageText = tokenizedText.items.map(token => token).join("");
-    // console.log(pageText)
-    // return pageText;
-    return "fsdfsd"
-  }catch(error: any){
-    debugger
-    console.log(error)
-    return "fsdfsd"
-  }
+    var pdf = await pdfjsLib.getDocument(buffer).promise
+    const numPages = pdf.numPages
+    var text: any = ""
+    for(let i = 1; i<=numPages; i++){
+      var page = await pdf.getPage(i)
+      var textContent = await page.getTextContent()
+      textContent.items.forEach((item: any) => {
+        text = text + " " + item.str
+      });
+    }
+    return text
 }
 
 }
