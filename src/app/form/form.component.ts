@@ -39,7 +39,7 @@ export class FormComponent {
     private extraiService: ExtraiService,
     private openaiService: OpenaiService,
     private mongodbService: MongodbService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.openaiForm = this.fb.group({
@@ -47,11 +47,11 @@ export class FormComponent {
       model: ['gpt-3.5-turbo-0125', Validators.required],
       projectName: ['TCC', Validators.required],
       jsonArchitecture: [
-        "{'nome_artigo': '', 'nome_artigo_traduzido':'', 'autores': [''], 'ano': '', 'universidade': '', 'resumo_artigo': '', 'assuntos_relacionados': [{'nome_assunto': '', 'descricao_assunto':'', 'breve_resumo_citacao':''}]}",
+        "{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}}",
         Validators.required,
       ],
       instruction: [
-        'O meu tcc é sobre a criação de um sistema que extrai dados de artigos através de LLMs como o chatgpt. Procure no artigo que postarei logo abaixo o que ele tem a ver com o meu trabalho.',
+        "Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal.",
         Validators.required,
       ],
     });
@@ -60,14 +60,14 @@ export class FormComponent {
       database: ['meu_tcc_db', Validators.required],
       collection: ['tcc', Validators.required],
       urlApi: ['https://sa-east-1.aws.data.mongodb-api.com/app/data-tzppnhx/endpoint/data/v1', Validators.required],
-      apiKey: ['', Validators.required],
+      email: ['', Validators.required],
+      password: ['', Validators.required]
     });
     this.openaiForm.valueChanges.subscribe((val) => {
       this.checkButton();
     });
     this.mongoForm.valueChanges.subscribe((val) => {
       if (this.mongoCheckbox) {
-        debugger;
         this.checkButton();
       }
     });
@@ -83,8 +83,8 @@ export class FormComponent {
   hideLoading() {
     this.openaiForm.enable;
     this.mongoForm.enable;
-    this.disableButton = false;
     this.showLoadingComponents = false;
+    this.checkButton();
   }
 
   checkButton() {
@@ -117,7 +117,7 @@ export class FormComponent {
     this.mongoForm.enable();
   }
 
-  showError(failedFiles: string[]){
+  showError(failedFiles: string[]) {
     if (failedFiles.length > 0) {
       failedFiles.forEach((fileName, index) => {
         if (index === failedFiles.length - 1) {
@@ -134,29 +134,37 @@ export class FormComponent {
     }
   }
 
-  showSuccess(successFiles: number, totalFiles: number){
+  showSuccess(successFiles: number, totalFiles: number) {
     'Arquivo(s) extraído(s) com sucesso: ' + successFiles + ' de ' + totalFiles;
     this.showSuccessAlert = true;
   }
 
-  downloadJson(results: any){
+  downloadJson(results: any) {
     const json = JSON.stringify(results);
     var blob = new Blob([json], { type: 'application/json' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = this.mongoForm.value.collection;
     a.click();
-}
+  }
 
-  async extract() {
+  async startExtraction() {
     try {
+      debugger
       this.showLoading();
       var promises: Promise<any>[] = [];
-      var failedFiles: string[];
+      var failedFiles: string[] = []
       this.loadingMessage = 'Testando conexão...';
-      await this.extraiService.testConnections(this.openaiForm.value, this.mongoCheckbox, this.mongoForm.value);
+      debugger
+      await this.openaiService.testApi(this.openaiForm.value)
+      var accessToken: string = ""
+      if (this.mongoCheckbox) {
+        accessToken = await this.mongodbService.getTokenAccess(this.mongoForm.value);
+      }
+      debugger
       this.loadingMessage = this.promiseResolvedCount + ' de ' + this.files.length + ' arquivos extraídos.';
       this.files.forEach((file, index) => {
+        debugger
         var promise = this.extraiService
           .extractData(this.openaiForm.value, file)
           .then((resp) => {
@@ -171,22 +179,30 @@ export class FormComponent {
         promises.push(promise);
       });
       Promise.all(promises).then(async (results) => {
-        debugger;
-        results = results.filter((element) => element !== null);
-        if(this.mongoCheckbox){
-          await this.mongodbService.insertMany(this.mongoForm.value, results).catch((error) => {this.downloadJson(results); debugger; throw new Error("Não foi possível salvar os arquivos no banco MongoDB. \n" + "Mensagem do servidor:" + error.message)})
+        try {
+          debugger
+          results = results.filter((element) => element !== null);
+          this.downloadJson(results)
+          if (this.mongoCheckbox) {
+            await this.mongodbService.insertMany(this.mongoForm.value, results, accessToken!)
+          }
+          debugger
+          if (failedFiles.length > 0) {
+            this.showError(failedFiles)
+          }
+          this.showSuccess(results.length, this.files.length)
+          this.hideLoading();
+        } catch (error: any) {
+          this.hideLoading();
+          this.errorMessage = error.message + 'Resposta do servidor: ' + error.error;
+          this.showErrorAlert = true;
         }
-        this.downloadJson(results)
-        this.showError(failedFiles)
-        this.showSuccess(results.length, this.files.length)
-      });
-      debugger;
+      })
     } catch (error: any) {
-      debugger;
+      debugger
       this.hideLoading();
       this.errorMessage = error.message + 'Resposta do servidor: ' + error.error;
       this.showErrorAlert = true;
-      debugger
     }
   }
 }

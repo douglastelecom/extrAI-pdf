@@ -37,10 +37,9 @@ async extractTextFromFile(file: File): Promise<string> {
       var page = await pdf.getPage(i)
       var textContent = await page.getTextContent()
       textContent.items.forEach((item: any) => {
-        text = text + " " + item.str
+        text = text.concat(item.str)
       });
     }
-    debugger
     return text
 }
 

@@ -6,6 +6,7 @@ import { OpenaiService } from './openai.service';
 import { FormMongo } from '../types/mongoBody.interface';
 import { UtilService } from './util.service';
 import { MongodbService } from './mongodb.service';
+import { ChatCompletionCreateParamsNonStreaming } from 'openai/resources';
 
 @Injectable({
   providedIn: 'root'
@@ -16,20 +17,15 @@ export class ExtraiService {
 
   async extractData(formOpenai: FormOpenai, file: File): Promise<any>{
       const article = await this.utilService.extractTextFromFile(file)
-      this.openaiService.setMessagesForExtraction(formOpenai, article)
-      const apiKey = formOpenai.apiKey
-      delete formOpenai.apiKey
-      delete formOpenai.instruction
-      delete formOpenai.jsonArchitecture
-      delete formOpenai.projectName
-      return await this.openaiService.completion(formOpenai, apiKey!, article)
+      debugger
+      return await this.openaiService.completion(formOpenai, formOpenai.apiKey!, article)
   }
 
-  async testConnections(formOpenai: FormOpenai, useMongo: boolean, formMongo?: FormMongo){
-    await this.openaiService.testApi(formOpenai)
-    if(useMongo){
-      await this.mongodbService.testApi(formMongo!)
-    }
-  }
+  // async testConnections(formOpenai: FormOpenai, useMongo: boolean, formMongo?: FormMongo){
+  //   await this.openaiService.testApi(formOpenai)
+  //   if(useMongo){
+  //    return await this.mongodbService.getTokenAccess(formMongo?.email!, formMongo?.password!, formMongo?.urlApi!)
+  //   }
+  // }
 
 }

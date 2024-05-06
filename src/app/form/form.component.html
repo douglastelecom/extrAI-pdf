@@ -37,14 +37,16 @@
 
       <div class="col-12">
         <label for="textareaInstruction" class="form-label">Instrução</label>
-        <textarea placeholder="Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal." 
-        formControlName="instruction" type="text" class="form-control" id="textareaInstruction" rows="6">
+        <textarea
+          placeholder="Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal."
+          formControlName="instruction" type="text" class="form-control" id="textareaInstruction" rows="6">
         </textarea>
       </div>
       <div class="col-12">
         <label for="textareaJson" class="form-label">Arquitetura do Json</label>
-        <textarea placeholder="{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}"
-         formControlName="jsonArchitecture" type="text" class="form-control" id="textareaJson" rows="6">
+        <textarea
+          placeholder="{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}"
+          formControlName="jsonArchitecture" type="text" class="form-control" id="textareaJson" rows="6">
         </textarea>
       </div>
     </form>
@@ -63,39 +65,43 @@
       </label>
     </div>
     @if(mongoCheckbox){
-      <div>
+    <div>
       <form [formGroup]="mongoForm" class="row g-3">
+        <div class="col-md-6">
+          <label for="email" class="form-label">Usuário</label>
+          <input formControlName="email" class="form-control" id="email" />
+        </div>
+        <div class="col-md-6">
+          <label for="email" class="form-label">Senha</label>
+          <input formControlName="password" class="form-control" id="password" />
+        </div>
         <div class="col-md-12">
           <label for="mongoUrl" class="form-label">URL Endpoint</label>
           <input formControlName="urlApi" class="form-control" id="mongoUrl" />
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="cluster" class="form-label">Cluster</label>
           <input formControlName="dataSource" class="form-control" id="cluster" />
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="database" class="form-label">Database</label>
           <input formControlName="database" class="form-control" id="database" />
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="projeto" class="form-label">Collection</label>
           <input formControlName="collection" class="form-control" id="collection" />
-        </div>
-        <div class="col-md-6">
-          <label for="apikey-mongo" class="form-label">API Key (MongoDB Atlas)</label>
-          <input formControlName="apiKey" class="form-control" id="apikey-mongo" />
         </div>
       </form>
     </div>
     }
     <div class="col-12">
-      <button type="submit" [disabled]="disableButton" (click)="extract()" class="btn btn-dark">Iniciar
+      <button type="submit" [disabled]="disableButton" (click)="startExtraction()" class="btn btn-dark">Iniciar
         Extração</button>
     </div>
+    @if(showLoadingComponents){
+      <div>
+        <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
+      </div>
+      }
   </div>
-  @if(showLoadingComponents){
-  <div>
-    <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
-  </div>
-  }
 </div>

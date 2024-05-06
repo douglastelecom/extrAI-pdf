@@ -2,7 +2,6 @@ import { FormOpenai} from './../types/openaiBody.interface';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import OpenAI from 'openai';
-import { ChatCompletionCreateParamsNonStreaming } from 'openai/resources';
 import { UtilService } from './util.service';
 
 @Injectable({
@@ -12,21 +11,21 @@ export class OpenaiService {
 
   constructor(private http: HttpClient, private utilService: UtilService) { }
 
-  async completion(formOpenai: ChatCompletionCreateParamsNonStreaming, apiKey: string, article: string): Promise<any>{
+  async completion(formOpenai: FormOpenai, apiKey: string, article: string): Promise<any>{
     try{ 
     const openai = new OpenAI({apiKey: apiKey, dangerouslyAllowBrowser: true})
-    debugger
-      this.setMessagesForExtraction(formOpenai, article)
-      const response = await openai.chat.completions.create(formOpenai)
+      debugger  
+      const openaiBody: any = this.createBody(formOpenai, article)
+      const response: any = await openai.chat.completions.create(openaiBody)
       debugger
       return JSON.parse(response.choices[0].message.content!)
     } catch (error: any) {
       debugger
-      if (error.message.substring(0, 10) === "Rate limit") {
+      if (error.error.message.substring(0, 10) === "Rate limit") {
         const pause = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
         await pause(30000);
         return await this.completion(formOpenai, apiKey, article)
-      } else if (error.message.substring(0, 20) === "This model's maximum") {
+      } else if (error.error.message.substring(0, 20) === "This model's maximum") {
         var { maxContextLength, resultedTokens } = this.extractValuesFromErrorMaximumContent(error.message)
         if ((maxContextLength / resultedTokens) < 0.75) {
           throw new Error("Arquivo muito grande.")
@@ -39,12 +38,14 @@ export class OpenaiService {
     }
 }
 
-  setMessagesForExtraction(openaiForm: FormOpenai, article: string){
-    openaiForm.messages = [{ role: "system", content: "Você será minha ferramenta para extração de dados." },
-    { role: "user", content: openaiForm.instruction + "Extraia as informações em português (se não estiver em português, traduza) contidas no artigo abaixo respondendo com um json no formato: "
-     + openaiForm.jsonArchitecture
+  createBody(formOpenai: FormOpenai, article: string){
+    const messages = [{ role: "system", content: "Você será minha ferramenta para extração de dados em formato json." },
+    { role: "user", content: formOpenai.instruction + "Extraia as informações em português (se não estiver em português, traduza) contidas no artigo abaixo respondendo com um json no formato: "
+     + formOpenai.jsonArchitecture
      + " \n "  
      + "Recupere apenas o que está no artigo, não coloque informações que não estão explicitamente no artigo." + " \n " + article }]
+     var openaiBody: any = {seed: 100, messages: messages, model: formOpenai.model}
+    return openaiBody
   }
 
   extractValuesFromErrorMaximumContent(errorMessage: any) {
@@ -60,7 +61,6 @@ export class OpenaiService {
 
   async testApi(reqBody: any) {
     try {
-      debugger
         const openai = new OpenAI({ apiKey: reqBody.apiKey, dangerouslyAllowBrowser: true });
         await openai.chat.completions.create({
             messages: [{ role: "system", content: "Isso é um teste." },
@@ -68,7 +68,6 @@ export class OpenaiService {
             model: reqBody.model,
             response_format: { type: "json_object" }
         });
-        debugger
     } catch (error: any) {
         throw new Error("Não foi possível se comunicar com a API da OpenAI. Verifique a Api Key e os demais parâmetros.")
     }

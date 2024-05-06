@@ -4,6 +4,7 @@ export interface FormMongo {
     collection: string;
     documents: any[];
     urlApi?: string;
-    apiKey?: string;
+    email?: string;
+    password?: string;
 }
 
