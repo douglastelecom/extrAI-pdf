@@ -1,18 +1,18 @@
-@if(showSuccess){
+@if(showSuccessAlert){
 <div class="alert alert-success success" role="alert">
   <div class="messageAlert">{{successFilesString}}</div>
-  <div class="close" (click)="showSuccess = false"> &times;</div>
+  <div class="close" (click)="showSuccessAlert = false"> &times;</div>
 </div>
 }
-@if(showError){
+@if(showErrorAlert){
 <div class="alert alert-danger error" role="alert">
-  <div class="messageAlert">{{errorString}}</div>
-  <div class="close" (click)="showError = false"> &times;</div>
+  <div class="messageAlert">{{errorMessage}}</div>
+  <div class="close" (click)="showErrorAlert = false"> &times;</div>
 </div>
 }
 <div class="form-content">
   <div class="row g-3 shadow forms">
-    @if(showLoading){
+    @if(showLoadingComponents){
     <div class="spinner-border loading" role="status">
       <span class="sr-only"></span>
     </div>
@@ -65,6 +65,10 @@
     @if(mongoCheckbox){
       <div>
       <form [formGroup]="mongoForm" class="row g-3">
+        <div class="col-md-12">
+          <label for="mongoUrl" class="form-label">URL Endpoint</label>
+          <input formControlName="urlApi" class="form-control" id="mongoUrl" />
+        </div>
         <div class="col-md-6">
           <label for="cluster" class="form-label">Cluster</label>
           <input formControlName="dataSource" class="form-control" id="cluster" />
@@ -89,7 +93,7 @@
         Extração</button>
     </div>
   </div>
-  @if(showLoading){
+  @if(showLoadingComponents){
   <div>
     <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
   </div>

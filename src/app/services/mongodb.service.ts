@@ -12,7 +12,7 @@ export class MongodbService {
   async insertMany(formMongo: FormMongo, documents: any[]) {
     try {
       formMongo.documents = documents
-      const urlApi: string | undefined = formMongo.urlApi;
+      const urlApi: string | undefined = formMongo.urlApi + "/action/insertMany";
       const apiKey: string | undefined = formMongo.apiKey;
       delete formMongo.urlApi;
       delete formMongo.apiKey;
@@ -30,10 +30,12 @@ export class MongodbService {
   }
   async testApi(formMongo: FormMongo) {
     try {
-      const urlApi: string | undefined = formMongo.urlApi;
+      debugger
+      const urlApi: string | undefined = formMongo.urlApi + "/action/insertMany";
       const apiKey: string | undefined = formMongo.apiKey;
       formMongo.documents = [{ doc1: 1 }, { doc2: 2 }];
       formMongo.collection = 'test';
+      debugger
       delete formMongo.urlApi;
       delete formMongo.apiKey;
       const headers = new HttpHeaders({
@@ -43,6 +45,8 @@ export class MongodbService {
       var response = this.http.post<any>(urlApi!, formMongo, { headers });
       return await lastValueFrom(response);
     } catch (error: any) {
+      console.log(error)
+      debugger
       throw new Error(
         'Não foi possível estabelecer uma conexão com a API MongoDB Atlas.'
       );
