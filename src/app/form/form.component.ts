@@ -6,8 +6,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ThisReceiver } from '@angular/compiler';
 import { MongodbService } from '../services/mongodb.service';
 import { ExtraiService } from '../services/extrai.service';
 import { OpenaiService } from '../services/openai.service';
@@ -79,7 +77,6 @@ export class FormComponent {
   }
 
   showLoading() {
-    debugger
     this.disableForms();
     this.disableButton = true;
     this.showLoadingIcon = true;
@@ -87,7 +84,6 @@ export class FormComponent {
   }
 
   hideLoading() {
-    debugger
     this.enableForms();
     this.showLoadingIcon = false;
     this.showLoadingAlert = false;
@@ -166,26 +162,21 @@ export class FormComponent {
       this.showErrorAlertDownloadJson = true;
       this.errorMessageDownloadJson = "Não foi possível baixar o Json. Verifique se os arquivos foram processados corretamente."
     }
-
   }
 
   async startExtraction() {
     try {
-      debugger
       this.promiseResolvedCount = 0;
       this.showLoading();
       var promises: Promise<any>[] = [];
       var failedFiles: string[] = []
       this.loadingMessage = 'Testando conexão...';
-      debugger
       await this.openaiService.testApi(this.openaiForm.value)
       var accessToken: string = ""
       if (this.mongoCheckbox) {
         accessToken = await this.mongodbService.getTokenAccess(this.mongoForm.value);
       }
-      debugger
       this.files.forEach((file, index) => {
-        debugger
         var promise = this.extraiService
           .extractData(this.openaiForm.value, file)
           .then((resp) => {
@@ -201,7 +192,6 @@ export class FormComponent {
       });
       Promise.all(promises).then(async (results) => {
         try {
-          debugger
           results = results.filter((element) => element !== null);
           if(this.jsonCheckbox){
             this.downloadJson(results)
@@ -212,7 +202,6 @@ export class FormComponent {
               this.errorMessageMongo = "Não foi possível salvar os arquivos através da API Mongo Atlas. \n Verifique se os parâmetros estão corretos."
             })
           }
-          debugger
           if (failedFiles.length > 0) {
             this.showError(failedFiles)
           }
@@ -225,7 +214,6 @@ export class FormComponent {
         }
       })
     } catch (error: any) {
-      debugger
       this.hideLoading();
       this.errorMessage = error.message + 'Resposta do servidor: ' + error.error;
       this.showErrorAlert = true;

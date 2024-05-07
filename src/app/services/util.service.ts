@@ -1,7 +1,6 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker";
 import { Injectable } from '@angular/core';
-import { TextContent } from 'pdfjs-dist/types/src/display/api';
 @Injectable({
   providedIn: 'root'
 })
@@ -37,10 +36,16 @@ async extractTextFromFile(file: File): Promise<string> {
       var page = await pdf.getPage(i)
       var textContent = await page.getTextContent()
       textContent.items.forEach((item: any) => {
-        text = text.concat(item.str)
+        if(item.str.length === 0){
+          text = text.concat(" ");
+        } else{
+          if(text.str !== "-"){
+            text = text.concat(item.str)
+          }
+        }
       });
     }
-    return text
+    return text.replace(/- /g, '')
 }
 
 }

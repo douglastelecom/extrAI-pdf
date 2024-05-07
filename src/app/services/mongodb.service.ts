@@ -39,7 +39,6 @@ export class MongodbService {
 
   async getTokenAccess(formMongo: FormMongo) {
     try{
-      debugger
       const match = formMongo.urlApi!.match(/\/app\/([^\/]+)/)
       const dataId = match ? match[1] : null;
       if(!match){
