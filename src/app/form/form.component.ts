@@ -29,11 +29,16 @@ export class FormComponent {
   successFilesString: string = '';
   loadingMessage: string = '';
   disableButton: boolean = true;
-  showLoadingComponents: boolean = false;
+  showLoadingIcon: boolean = false;
   jsonsExtracted: string[] = [];
   jsonCheckbox: boolean = true;
   mongoCheckbox: boolean = false;
   promiseResolvedCount: number = 0;
+  showErrorAlertDownloadJson: boolean = false;
+  errorMessageDownloadJson: string = '';
+  showErrorAlertMongo: boolean = false;
+  errorMessageMongo: string = '';
+  showLoadingAlert: boolean = false;
   constructor(
     private fb: FormBuilder,
     private extraiService: ExtraiService,
@@ -74,16 +79,18 @@ export class FormComponent {
   }
 
   showLoading() {
-    this.openaiForm.disable;
-    this.mongoForm.disable;
+    debugger
+    this.disableForms();
     this.disableButton = true;
-    this.showLoadingComponents = true;
+    this.showLoadingIcon = true;
+    this.showLoadingAlert = true;
   }
 
   hideLoading() {
-    this.openaiForm.enable;
-    this.mongoForm.enable;
-    this.showLoadingComponents = false;
+    debugger
+    this.enableForms();
+    this.showLoadingIcon = false;
+    this.showLoadingAlert = false;
     this.checkButton();
   }
 
@@ -118,20 +125,28 @@ export class FormComponent {
   }
 
   showError(failedFiles: string[]) {
+    this.errorMessage = '';
     if (failedFiles.length > 0) {
-      failedFiles.forEach((fileName, index) => {
-        if (index === failedFiles.length - 1) {
-          this.errorMessage = this.errorMessage.slice(0, -2) + ' e ' + "'" + fileName + "'" + '.';
-        } else {
-          this.errorMessage = this.errorMessage + "'" + fileName + "'" + ', ';
-        }
-      });
+      if(failedFiles.length === 1){
+        this.errorMessage = 'O seguinte arquivo não foi extraído: '+ failedFiles[0] +'. Verifique se o tamanho do arquivo é compatível com o modelo escolhido, ou se é escaneado.';
+        this.showErrorAlert = true;
+      }
+      else{
+        failedFiles.forEach((fileName, index) => {
+          if (index === failedFiles.length - 1) {
+            this.errorMessage = this.errorMessage.slice(0, -2) + ' e ' + "'" + fileName + "'" + '.';
+          } else {
+            this.errorMessage = this.errorMessage + "'" + fileName + "'" + ', ';
+          }
+        });
+      
       this.errorMessage =
         'Os seguintes arquivos não foram extraídos: ' +
         this.errorMessage +
-        '\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido, ou se possuem caracteres.';
+        '\n . Verifique se o tamanho dos arquivos é compatível com o modelo escolhido, ou se são escaneados.';
       this.showErrorAlert = true;
     }
+  }
   }
 
   showSuccess(successFiles: number, totalFiles: number) {
@@ -140,17 +155,24 @@ export class FormComponent {
   }
 
   downloadJson(results: any) {
-    const json = JSON.stringify(results);
-    var blob = new Blob([json], { type: 'application/json' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = this.mongoForm.value.collection;
-    a.click();
+    try{
+      const json = JSON.stringify(results);
+      var blob = new Blob([json], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = this.mongoForm.value.collection;
+      a.click();
+    } catch(error: any){
+      this.showErrorAlertDownloadJson = true;
+      this.errorMessageDownloadJson = "Não foi possível baixar o Json. Verifique se os arquivos foram processados corretamente."
+    }
+
   }
 
   async startExtraction() {
     try {
       debugger
+      this.promiseResolvedCount = 0;
       this.showLoading();
       var promises: Promise<any>[] = [];
       var failedFiles: string[] = []
@@ -162,7 +184,6 @@ export class FormComponent {
         accessToken = await this.mongodbService.getTokenAccess(this.mongoForm.value);
       }
       debugger
-      this.loadingMessage = this.promiseResolvedCount + ' de ' + this.files.length + ' arquivos extraídos.';
       this.files.forEach((file, index) => {
         debugger
         var promise = this.extraiService
@@ -182,9 +203,14 @@ export class FormComponent {
         try {
           debugger
           results = results.filter((element) => element !== null);
-          this.downloadJson(results)
+          if(this.jsonCheckbox){
+            this.downloadJson(results)
+          }
           if (this.mongoCheckbox) {
-            await this.mongodbService.insertMany(this.mongoForm.value, results, accessToken!)
+            await this.mongodbService.insertMany(this.mongoForm.value, results, accessToken!).catch((error: any) => {
+              this.showErrorAlertMongo = true;
+              this.errorMessageMongo = "Não foi possível salvar os arquivos através da API Mongo Atlas. \n Verifique se os parâmetros estão corretos."
+            })
           }
           debugger
           if (failedFiles.length > 0) {

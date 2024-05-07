@@ -14,19 +14,26 @@ export class MongodbService {
     try {
       formMongo.documents = documents
       const urlApi: string | undefined = formMongo.urlApi + "/action/insertMany";
-      delete formMongo.urlApi;
-      delete formMongo.password;
-      delete formMongo.email;
+      const body = this.createBody(formMongo);
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' +  accessToken
       });
-      var response = this.http.post<any>(urlApi!, formMongo, { headers });
+      var response = this.http.post<any>(urlApi!, body, { headers });
       return await lastValueFrom(response);
     } catch (error: any) {
       throw new Error(
         'Não foi possível salvar os arquivos na API MongoDB Atlas.'
       );
+    }
+  }
+
+  createBody(formMongo: FormMongo){
+    return {
+      dataSource: formMongo.dataSource,
+      database: formMongo.database,
+      collection: formMongo.collection,
+      documents: formMongo.documents,
     }
   }
 

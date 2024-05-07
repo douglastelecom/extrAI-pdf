@@ -1,23 +1,50 @@
-@if(showSuccessAlert || showErrorAlert){
-  <div class="alert-container">
-    @if(showSuccessAlert){
-      <div class="alert alert-success success" role="alert">
-        <div class="messageAlert">{{successFilesString}}</div>
-        <div class="close" (click)="showSuccessAlert = false"> &times;</div>
-      </div>
-      }
-      @if(showErrorAlert){
-      <div class="alert alert-danger error" role="alert">
-        <div class="messageAlert">{{errorMessage}}</div>
-        <div class="close" (click)="showErrorAlert = false"> &times;</div>
-      </div>
-      }
+@if(showSuccessAlert || showErrorAlert || showLoadingAlert){
+<div class="alert-container">
+  @if(showLoadingAlert){
+  <div class="alert alert-secondary success" role="alert">
+    <div style="display: flex;">
+      <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
+    </div>
   </div>
+  }
+  @if(showSuccessAlert){
+  <div class="alert alert-success success" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{successFilesString}}</p>
+      <p class="close" (click)="showSuccessAlert = false"> &times;</p>
+    </div>
+  </div>
+  }
+  @if(showErrorAlert){
+  <div class="alert alert-danger error" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{errorMessage}}</p>
+      <p class="close" (click)="showErrorAlert = false"> &times;</p>
+    </div>
+  </div>
+  }
+  @if(showErrorAlertDownloadJson){
+  <div class="alert alert-danger error" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{errorMessageDownloadJson}}</p>
+      <p class="close" (click)="showErrorAlertDownloadJson = false"> &times;</p>
+    </div>
+  </div>
+  }
+  @if(showErrorAlertMongo){
+  <div class="alert alert-danger error" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{errorMessageMongo}}</p>
+      <p class="close" (click)="showErrorAlertMongo = false"> &times;</p>
+    </div>
+  </div>
+  }
+</div>
 }
 
 <div class="form-content">
   <div class="row g-3 shadow forms">
-    @if(showLoadingComponents){
+    @if(showLoadingIcon){
     <div class="spinner-border loading" role="status">
       <span class="sr-only"></span>
     </div>
@@ -103,10 +130,5 @@
       <button type="submit" [disabled]="disableButton" (click)="startExtraction()" class="btn btn-dark">Iniciar
         Extração</button>
     </div>
-    @if(showLoadingComponents){
-      <div>
-        <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
-      </div>
-      }
   </div>
 </div>
