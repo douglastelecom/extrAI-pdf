@@ -17,6 +17,9 @@ export class ExtraiService {
 
   async extractData(formOpenai: FormOpenai, file: File): Promise<any>{
       const article = await this.utilService.extractTextFromFile(file)
+      if(article.length <= 400){
+        throw new Error("Arquivo muito pequeno para extração. Verifique se o arquivo possui caracteres.")
+      }
       debugger
       return await this.openaiService.completion(formOpenai, formOpenai.apiKey!, article)
   }

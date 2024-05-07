@@ -1,15 +1,20 @@
-@if(showSuccessAlert){
-<div class="alert alert-success success" role="alert">
-  <div class="messageAlert">{{successFilesString}}</div>
-  <div class="close" (click)="showSuccessAlert = false"> &times;</div>
-</div>
+@if(showSuccessAlert || showErrorAlert){
+  <div class="alert-container">
+    @if(showSuccessAlert){
+      <div class="alert alert-success success" role="alert">
+        <div class="messageAlert">{{successFilesString}}</div>
+        <div class="close" (click)="showSuccessAlert = false"> &times;</div>
+      </div>
+      }
+      @if(showErrorAlert){
+      <div class="alert alert-danger error" role="alert">
+        <div class="messageAlert">{{errorMessage}}</div>
+        <div class="close" (click)="showErrorAlert = false"> &times;</div>
+      </div>
+      }
+  </div>
 }
-@if(showErrorAlert){
-<div class="alert alert-danger error" role="alert">
-  <div class="messageAlert">{{errorMessage}}</div>
-  <div class="close" (click)="showErrorAlert = false"> &times;</div>
-</div>
-}
+
 <div class="form-content">
   <div class="row g-3 shadow forms">
     @if(showLoadingComponents){

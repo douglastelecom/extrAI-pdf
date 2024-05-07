@@ -129,13 +129,13 @@ export class FormComponent {
       this.errorMessage =
         'Os seguintes arquivos não foram extraídos: ' +
         this.errorMessage +
-        '\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido.';
+        '\n Verifique se o tamanho do(s) arquivo(s) é compatível com o modelo escolhido, ou se possuem caracteres.';
       this.showErrorAlert = true;
     }
   }
 
   showSuccess(successFiles: number, totalFiles: number) {
-    'Arquivo(s) extraído(s) com sucesso: ' + successFiles + ' de ' + totalFiles;
+   this.successFilesString = 'Arquivo(s) extraído(s) com sucesso: ' + successFiles + ' de ' + totalFiles;
     this.showSuccessAlert = true;
   }
 
