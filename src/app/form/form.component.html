@@ -1,52 +1,134 @@
-@if(showSuccess){
-<div class="alert alert-success success" role="alert">
-  <div class="messageAlert">{{successFilesString}}</div> 
-  <div class="close" (click)="showSuccess = false"> &times;</div>
-</div>
-}
-@if(showError){
-<div class="alert alert-danger error" role="alert">
-  <div class="messageAlert">{{errorString}}</div>
-  <div class="close" (click)="showError = false"> &times;</div>
-</div>
-}@if(showLoading){
-  <div class="spinner-border loading" role="status">
-    <span class="sr-only"></span>
+@if(showSuccessAlert || showErrorAlert || showLoadingAlert){
+<div class="alert-container">
+  @if(showLoadingAlert){
+  <div class="alert alert-secondary success" role="alert">
+    <div style="display: flex;">
+      <p>Arquivos processados: {{promiseResolvedCount}} de {{files.length}}</p>
+    </div>
   </div>
+  }
+  @if(showSuccessAlert){
+  <div class="alert alert-success success" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{successFilesString}}</p>
+      <p class="close" (click)="showSuccessAlert = false"> &times;</p>
+    </div>
+  </div>
+  }
+  @if(showErrorAlert){
+  <div class="alert alert-danger error" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{errorMessage}}</p>
+      <p class="close" (click)="showErrorAlert = false"> &times;</p>
+    </div>
+  </div>
+  }
+  @if(showErrorAlertDownloadJson){
+  <div class="alert alert-danger error" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{errorMessageDownloadJson}}</p>
+      <p class="close" (click)="showErrorAlertDownloadJson = false"> &times;</p>
+    </div>
+  </div>
+  }
+  @if(showErrorAlertMongo){
+  <div class="alert alert-danger error" role="alert">
+    <div style="display: flex;">
+      <p class="messageAlert">{{errorMessageMongo}}</p>
+      <p class="close" (click)="showErrorAlertMongo = false"> &times;</p>
+    </div>
+  </div>
+  }
+</div>
 }
+
 <div class="form-content">
-  <form [formGroup]="formGroup" class="row g-3 shadow">
-    <div class="col-md-6">
-      <label for="api-key" class="form-label">OpenAI API Key</label>
-      <input formControlName="openaiKey" class="form-control" id="api-key" />
+  <div class="row g-3 shadow forms">
+    @if(showLoadingIcon){
+    <div class="spinner-border loading" role="status">
+      <span class="sr-only"></span>
     </div>
-    <div class="col-md-6">
-      <label for="inputPassword4" class="form-label">Modelo GPT</label>
-      <input formControlName="model" class="form-control" id="inputPassword4" />
+    }
+    <form [formGroup]="openaiForm" class="row g-3">
+      <div class="col-md-6">
+        <label for="projeto" class="form-label">Nome do projeto</label>
+        <input formControlName="projectName" class="form-control" id="projeto" />
+      </div>
+      <div class="col-md-6">
+        <label for="formFileLg" class="form-label">Artigos</label>
+        <input class="form-control" id="formFile" type="file" multiple accept=".pdf" (change)="setFiles($event)" />
+      </div>
+      <div class="col-md-6">
+        <label for="apikey-openai" class="form-label">API Key (OpenAI)</label>
+        <input formControlName="apiKey" class="form-control" id="apikey-openai" />
+      </div>
+      <div class="col-md-6">
+        <label for="model" class="form-label">Modelo</label>
+        <input formControlName="model" class="form-control" id="model" />
+      </div>
+
+      <div class="col-12">
+        <label for="textareaInstruction" class="form-label">Instrução</label>
+        <textarea
+          placeholder="Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal."
+          formControlName="instruction" type="text" class="form-control" id="textareaInstruction" rows="6">
+        </textarea>
+      </div>
+      <div class="col-12">
+        <label for="textareaJson" class="form-label">Arquitetura do Json</label>
+        <textarea
+          placeholder="{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}"
+          formControlName="jsonArchitecture" type="text" class="form-control" id="textareaJson" rows="6">
+        </textarea>
+      </div>
+    </form>
+    <div class="col-12">
+      <input class="form-check-input" style="margin-right: 0.4rem;" type="checkbox"
+        [ngModelOptions]="{standalone: true}" [(ngModel)]="jsonCheckbox" id="flexCheckDefault">
+      <label class="form-check-label" for="flexCheckDefault">
+        Download Json
+      </label>
     </div>
     <div class="col-12">
-      <label for="mongo" class="form-label">MongoDB Atlas URL</label>
-      <input formControlName="mongoUrl" type="text" class="form-control" id="mongo" />
+      <input class="form-check-input" style="margin-right: 0.4rem;" type="checkbox"
+        [ngModelOptions]="{standalone: true}" [(ngModel)]="mongoCheckbox" id="flexCheckMongo">
+      <label class="form-check-label" for="flexCheckMongo">
+        Salvar via MongoDB Atlas API
+      </label>
     </div>
-    <div class="col-md-6">
-      <label for="db" class="form-label">Banco de Dados</label>
-      <input formControlName="db" class="form-control" id="db" />
-    </div>
-    <div class="col-md-6">
-      <label for="projeto" class="form-label">Collection</label>
-      <input formControlName="collection" class="form-control" id="projeto" />
-    </div>
+    @if(mongoCheckbox){
     <div>
-      <label for="formFileLg" class="form-label">Artigos</label>
-      <input class="form-control" id="formFile" type="file" multiple accept=".pdf" (change)="setFiles($event)" />
+      <form [formGroup]="mongoForm" class="row g-3">
+        <div class="col-md-6">
+          <label for="email" class="form-label">Usuário</label>
+          <input formControlName="email" class="form-control" id="email" />
+        </div>
+        <div class="col-md-6">
+          <label for="email" class="form-label">Senha</label>
+          <input formControlName="password" class="form-control" id="password" />
+        </div>
+        <div class="col-md-12">
+          <label for="mongoUrl" class="form-label">URL Endpoint</label>
+          <input formControlName="urlApi" class="form-control" id="mongoUrl" />
+        </div>
+        <div class="col-md-4">
+          <label for="cluster" class="form-label">Cluster</label>
+          <input formControlName="dataSource" class="form-control" id="cluster" />
+        </div>
+        <div class="col-md-4">
+          <label for="database" class="form-label">Database</label>
+          <input formControlName="database" class="form-control" id="database" />
+        </div>
+        <div class="col-md-4">
+          <label for="projeto" class="form-label">Collection</label>
+          <input formControlName="collection" class="form-control" id="collection" />
+        </div>
+      </form>
     </div>
+    }
     <div class="col-12">
-      <label for="textarea" class="form-label">Arquitetura do Json</label>
-      <textarea formControlName="json" type="text" class="form-control" id="textarea" rows="6">
-      </textarea>
+      <button type="submit" [disabled]="disableButton" (click)="startExtraction()" class="btn btn-dark">Iniciar
+        Extração</button>
     </div>
-    <div class="col-12">
-      <button type="submit" [disabled]="disableButton" (click)="extract()" class="btn btn-dark">Iniciar Extração</button>
-    </div>
-  </form>
+  </div>
 </div>
