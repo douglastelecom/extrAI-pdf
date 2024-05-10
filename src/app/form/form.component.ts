@@ -48,21 +48,15 @@ export class FormComponent {
     this.openaiForm = this.fb.group({
       apiKey: ['', Validators.required],
       model: ['gpt-3.5-turbo-0125', Validators.required],
-      projectName: ['TCC', Validators.required],
-      jsonArchitecture: [
-        "{'nome_artigo': '', 'autores': [''], 'ano': '', 'universidade': '', 'lesoes': [{'descricao_lesao': '', 'fatores_de_risco':[''], 'cuidados_de_enfermagem': ['']}}",
-        Validators.required,
-      ],
-      instruction: [
-        "Colete informações referentes aos fatores de risco para lesões e cuidados de enfermagem com a pele do recém-nascido na unidade de terapia intensiva neonatal.",
-        Validators.required,
-      ],
+      projectName: ['', Validators.required],
+      jsonArchitecture: ['', Validators.required],
+      instruction: ['', Validators.required],
     });
     this.mongoForm = this.fb.group({
-      dataSource: ['extractor-cluster', Validators.required],
-      database: ['meu_tcc_db', Validators.required],
-      collection: ['tcc', Validators.required],
-      urlApi: ['https://sa-east-1.aws.data.mongodb-api.com/app/data-tzppnhx/endpoint/data/v1', Validators.required],
+      dataSource: ['', Validators.required],
+      database: ['', Validators.required],
+      collection: ['', Validators.required],
+      urlApi: ['', Validators.required],
       email: ['', Validators.required],
       password: ['', Validators.required]
     });
