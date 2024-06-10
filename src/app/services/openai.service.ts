@@ -43,7 +43,7 @@ export class OpenaiService {
         + " \n "
         + "Recupere apenas o que está no artigo, não coloque informações que não estão explicitamente no artigo. As informações dentro do json devem ser retornadas sempre em português." + " \n " + article
     }]
-    var openaiBody: any = { seed: 1000, messages: messages, model: formOpenai.model }
+    var openaiBody: any = { seed: 1000, messages: messages, model: formOpenai.model, response_format: { type: "json_object" }, temperature: 0.4 }
     return openaiBody
   }
 
